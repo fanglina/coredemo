@@ -1,0 +1,1 @@
+package frameworkimport (	"fmt"	"net/http")//类型检查var _ http.Handler = (*Core)(nil)//框架核心结构type Core struct {}//初始化核心接口func NewCore() *Core {	return &Core{}}//框架核心结构要实现的handlerfunc (c *Core) ServeHTTP(w http.ResponseWriter, r *http.Request) {	fmt.Println(r)}
