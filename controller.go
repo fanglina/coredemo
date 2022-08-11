@@ -23,8 +23,6 @@ func FooController(c *framework.Context) error {
 		}()
 		time.Sleep(10 * time.Second)
 		c.Json(200, "ok")
-
-		finish <- struct{}{}
 	}()
 
 	select {
