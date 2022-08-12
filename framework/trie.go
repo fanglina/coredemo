@@ -12,19 +12,18 @@ const (
 	// path parameter.
 	WildcardParamStart = "*"
 
-	pathSep  = "/"
+	pathSep = "/"
 )
-
 
 type Tree struct {
 	root *node //根节点
 }
 
 type node struct {
-	isLast bool //该节点是否能成为一个独立的uri,是否自身就是一个终极节点
-	segment string //uri的字符串
-	handler ControllerHandler //控制器
-	childs []*node //子节点
+	isLast  bool                //该节点是否能成为一个独立的uri,是否自身就是一个终极节点
+	segment string              //uri的字符串
+	handler []ControllerHandler //中间件+控制器
+	childs  []*node             //子节点
 }
 
 func newNode() *node {
@@ -41,12 +40,12 @@ func NewTree() *Tree {
 }
 
 //判断一个segment是否是通用segment,即以：开头
-func isWildSegment(segment string) bool  {
+func isWildSegment(segment string) bool {
 	return strings.HasPrefix(segment, ParamStart)
 }
 
 //过滤下一层满足segment规则的子节点
-func (n *node) filterChildNodes(segment string) []*node  {
+func (n *node) filterChildNodes(segment string) []*node {
 	if len(n.childs) == 0 {
 		return nil
 	}
@@ -62,7 +61,7 @@ func (n *node) filterChildNodes(segment string) []*node  {
 		if isWildSegment(cnode.segment) {
 			//如果下一层子节点有通配符，则满足需求
 			nodes = append(nodes, cnode)
-		}else if cnode.segment == segment {
+		} else if cnode.segment == segment {
 			//如果下一层字节点没有通配符，但是文本完全匹配，则满足需求
 			nodes = append(nodes, cnode)
 		}
@@ -72,7 +71,7 @@ func (n *node) filterChildNodes(segment string) []*node  {
 }
 
 // 判断路由是否已经在节点的所有子节点树种存在
-func (n *node) mathNode(uri string) *node  {
+func (n *node) mathNode(uri string) *node {
 	//使用分割符将uri切割为两部分
 	segments := strings.SplitN(uri, pathSep, 2)
 	// 第一个部分用于匹配下一层子节点
@@ -117,8 +116,8 @@ func (n *node) mathNode(uri string) *node  {
 /book/:id/name
 /book/:student/age
 /:user/name/:age(冲突)
- */
-func (tree *Tree) AddRouter(uri string, handler ControllerHandler) error {
+*/
+func (tree *Tree) AddRouter(uri string, handler []ControllerHandler) error {
 	n := tree.root
 	if n.mathNode(uri) != nil {
 		return errors.New("route exist:" + uri)
@@ -131,7 +130,7 @@ func (tree *Tree) AddRouter(uri string, handler ControllerHandler) error {
 		if !isWildSegment(segment) {
 			segment = strings.ToUpper(segment)
 		}
-		isLast := index == len(segments) - 1
+		isLast := index == len(segments)-1
 
 		var objNode *node //标记是否有合适的子节点
 
@@ -160,11 +159,11 @@ func (tree *Tree) AddRouter(uri string, handler ControllerHandler) error {
 		}
 		n = objNode
 	}
-    return nil
+	return nil
 }
 
 // 匹配uri
-func (tree *Tree) FindHandler(uri string) ControllerHandler {
+func (tree *Tree) FindHandler(uri string) []ControllerHandler {
 	matchNode := tree.root.mathNode(uri)
 	if matchNode == nil {
 		return nil

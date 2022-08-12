@@ -20,6 +20,10 @@ type Context struct {
 	//是否超时标记位
 	hasTimeout bool
 	writerMux  *sync.Mutex
+
+	//当前请求的链条
+	handlers []ControllerHandler
+	index int //当前请求到哪里
 }
 
 func NewContext(r *http.Request, w http.ResponseWriter) *Context {
@@ -28,6 +32,7 @@ func NewContext(r *http.Request, w http.ResponseWriter) *Context {
 		responseWriter: w,
 		ctx:            r.Context(),
 		writerMux:      &sync.Mutex{},
+		index: -1,
 	}
 }
 
@@ -65,6 +70,21 @@ func (ctx *Context) Err() error  {
 
 func (ctx *Context) Value(key interface{} ) interface{}  {
 	return ctx.BaseContext().Value(key)
+}
+
+func (ctx *Context) SetHandlers(handlers []ControllerHandler)  {
+	ctx.handlers = handlers
+}
+
+func (ctx *Context) Next() error {
+	ctx.index++
+	if ctx.index < len(ctx.handlers) {
+		if err := ctx.handlers[ctx.index](ctx); err != nil {
+			return err
+		}
+	}
+	return nil
+
 }
 
 func (ctx *Context) QueryAll() map[string][]string  {

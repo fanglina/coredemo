@@ -12,6 +12,7 @@ var _ http.Handler = (*Core)(nil)
 //框架核心结构
 type Core struct {
 	router map[string]*Tree
+	handlers []ControllerHandler
 }
 
 //初始化核心接口
@@ -25,29 +26,37 @@ func NewCore() *Core {
 	return &Core{router: router}
 }
 
+func (c *Core) Use(handlers ...ControllerHandler)  {
+	c.handlers = append(c.handlers, handlers...)
+}
+
 //匹配GET方法，增加路由规则
-func (c *Core) Get(url string, handler ControllerHandler)  {
-	if err := c.router["GET"].AddRouter(url, handler); err != nil {
+func (c *Core) Get(url string, handler ...ControllerHandler)  {
+	allHandlers := append(c.handlers, handler... )
+	if err := c.router["GET"].AddRouter(url, allHandlers); err != nil {
 		log.Fatal("add router error:", err)
 	}
 }
 
 // 匹配POST方法，增加路由规则
-func (c *Core) Post(url string, handler ControllerHandler)  {
-	if err := c.router["POST"].AddRouter(url, handler); err != nil {
+func (c *Core) Post(url string, handler ...ControllerHandler)  {
+	allHandlers := append(c.handlers, handler... )
+	if err := c.router["POST"].AddRouter(url, allHandlers); err != nil {
 		log.Fatal("add router error:", err)
 	}
 }
 
 //匹配Put 方法，增加路由规则
-func (c *Core) Put(url string, handler ControllerHandler)  {
-	if err := c.router["PUT"].AddRouter(url, handler); err != nil {
+func (c *Core) Put(url string, handler ...ControllerHandler)  {
+	allHandlers := append(c.handlers, handler... )
+	if err := c.router["PUT"].AddRouter(url, allHandlers); err != nil {
 		log.Fatal("add router error:", err)
 	}
 }
 
-func (c *Core) Delete(url string, handler ControllerHandler)  {
-	if err := c.router["DELETE"].AddRouter(url, handler); err != nil {
+func (c *Core) Delete(url string, handler ...ControllerHandler)  {
+	allHandlers := append(c.handlers, handler... )
+	if err := c.router["DELETE"].AddRouter(url, allHandlers); err != nil {
 		log.Fatal("add router error:", err)
 	}
 }
@@ -56,7 +65,7 @@ func (c *Core) Group(prefix string) IGroup  {
 	return NewGroup(c, prefix)
 }
 
-func (c *Core) FindRouteRequest(request *http.Request) ControllerHandler  {
+func (c *Core) FindRouteRequest(request *http.Request) []ControllerHandler  {
 	//uri 和method 全部转换成大写，保证大小写不敏感
 	uri := request.URL.Path
 	method := request.Method
@@ -75,14 +84,17 @@ func (c *Core) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := NewContext(r, w)
 
 	//寻找路由
-	router := c.FindRouteRequest(r)
-	if router == nil {
+	handlers := c.FindRouteRequest(r)
+	if handlers == nil {
 		//如果没有找到，这里打印日志
 		ctx.Json(404, "Not Found")
 		return
 	}
 
-	if err := router(ctx); err != nil {
+	ctx.SetHandlers(handlers)
+
+	//调用路由函数
+	if err := ctx.Next(); err != nil {
 		ctx.Json(500, "inner error")
 		return
 	}
