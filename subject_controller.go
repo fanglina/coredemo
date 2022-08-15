@@ -1,34 +1,38 @@
 package main
 
-import "coredemo/framework"
+import (
+	"coredemo/framework"
+	"fmt"
+)
 
 func SubjectAddController(c *framework.Context) error  {
-	c.Json(200, "OK, SubjectAddController")
+	c.SetOkStatus().Json( "OK, SubjectAddController")
 	return nil
 }
 
 func SubjectListController(c *framework.Context) error  {
-	c.Json(200, "OK, SubjectListController")
+	c.SetOkStatus().Json( "OK, SubjectListController")
 	return nil
 }
 
 
 func SubjectDelController(c *framework.Context) error  {
-	c.Json(200, "OK, SubjectDelController")
+	c.SetOkStatus().Json( "OK, SubjectDelController")
 	return nil
 }
 
 func SubjectUpdateController(c *framework.Context) error  {
-	c.Json(200, "OK, SubjectDelController")
+	c.SetOkStatus().Json( "OK, SubjectDelController")
 	return nil
 }
 
 func SubjectGetController(c *framework.Context) error  {
-	c.Json(200, "OK, SubjectGetController")
+	subjectId, _ := c.ParamInt("id", 0)
+	c.SetOkStatus().Json( "OK, SubjectGetController" + fmt.Sprint(subjectId) )
 	return nil
 }
 
 func SubjectNameController(c *framework.Context) error  {
-	c.Json(200, "OK, SubjectNameController")
+	c.SetOkStatus().Json("OK, SubjectNameController")
 	return nil
 }

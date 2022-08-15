@@ -65,7 +65,7 @@ func (c *Core) Group(prefix string) IGroup  {
 	return NewGroup(c, prefix)
 }
 
-func (c *Core) FindRouteRequest(request *http.Request) []ControllerHandler  {
+func (c *Core) FindRouteRequest(request *http.Request) *node  {
 	//uri 和method 全部转换成大写，保证大小写不敏感
 	uri := request.URL.Path
 	method := request.Method
@@ -73,7 +73,7 @@ func (c *Core) FindRouteRequest(request *http.Request) []ControllerHandler  {
 
 	//查找第一层map
 	if methodHandlers, ok := c.router[upperMethod];ok {
-		return methodHandlers.FindHandler(uri)
+		return methodHandlers.root.mathNode(uri)
 	}
 	return nil
 }
@@ -84,18 +84,23 @@ func (c *Core) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := NewContext(r, w)
 
 	//寻找路由
-	handlers := c.FindRouteRequest(r)
-	if handlers == nil {
+	node := c.FindRouteRequest(r)
+	if node == nil {
 		//如果没有找到，这里打印日志
-		ctx.Json(404, "Not Found")
+		ctx.SetStatus(404).Json("Not Found")
 		return
 	}
 
-	ctx.SetHandlers(handlers)
+	ctx.SetHandlers(node.handlers)
+
+	// 设置路由参数
+	params := node.parseParamsFromEndNode(r.URL.Path)
+	log.Println(params, r.URL.Path)
+	ctx.SetParams(params)
 
 	//调用路由函数
 	if err := ctx.Next(); err != nil {
-		ctx.Json(500, "inner error")
+		ctx.SetStatus(500).Json( "inner error")
 		return
 	}
 }
