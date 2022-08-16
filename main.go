@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gohade/hade/framework/gin"
 	"github.com/gohade/hade/framework/middleware"
+	"github.com/gohade/hade/provider/demo"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +15,9 @@ import (
 
 func main() {
 	core := gin.New()
+
+	//绑定具体服务
+	core.Bind(&demo.DemoServiceProvider{})
 
 	//注册中间件
 	core.Use(middleware.Cost())

@@ -18,6 +18,7 @@ func registerRouter(core *gin.Engine)  {
 		subjectApi.PUT("/:id", SubjectUpdateController )
 		subjectApi.GET("/:id", middleware.Test3(), SubjectGetController)
 		subjectApi.POST("/list/add", SubjectAddController)
+		subjectApi.GET("/list/all", SubjectListController)
 
 		subjectInnerApi := subjectApi.Group("/info")
 		{
