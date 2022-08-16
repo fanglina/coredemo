@@ -1,38 +1,31 @@
 package main
 
 import (
-	"coredemo/framework"
 	"fmt"
+	"github.com/gohade/hade/framework/gin"
 )
 
-func SubjectAddController(c *framework.Context) error  {
-	c.SetOkStatus().Json( "OK, SubjectAddController")
-	return nil
+func SubjectAddController(c *gin.Context) {
+	c.ISetOkStatus().IJson("OK, SubjectAddController")
 }
 
-func SubjectListController(c *framework.Context) error  {
-	c.SetOkStatus().Json( "OK, SubjectListController")
-	return nil
+func SubjectListController(c *gin.Context) {
+	c.ISetOkStatus().IJson("OK, SubjectListController")
 }
 
-
-func SubjectDelController(c *framework.Context) error  {
-	c.SetOkStatus().Json( "OK, SubjectDelController")
-	return nil
+func SubjectDelController(c *gin.Context) {
+	c.ISetOkStatus().IJson("OK, SubjectDelController")
 }
 
-func SubjectUpdateController(c *framework.Context) error  {
-	c.SetOkStatus().Json( "OK, SubjectDelController")
-	return nil
+func SubjectUpdateController(c *gin.Context) {
+	c.ISetOkStatus().IJson("OK, SubjectDelController")
 }
 
-func SubjectGetController(c *framework.Context) error  {
-	subjectId, _ := c.ParamInt("id", 0)
-	c.SetOkStatus().Json( "OK, SubjectGetController" + fmt.Sprint(subjectId) )
-	return nil
+func SubjectGetController(c *gin.Context) {
+	subjectId, _ := c.DefaultParamInt("id", 0)
+	c.ISetOkStatus().IJson("OK, SubjectGetController" + fmt.Sprint(subjectId))
 }
 
-func SubjectNameController(c *framework.Context) error  {
-	c.SetOkStatus().Json("OK, SubjectNameController")
-	return nil
+func SubjectNameController(c *gin.Context) {
+	c.ISetOkStatus().IJson("OK, SubjectNameController")
 }

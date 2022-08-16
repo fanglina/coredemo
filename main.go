@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"coredemo/framework"
-	"coredemo/framework/middleware"
+	"github.com/gohade/hade/framework/gin"
+	"github.com/gohade/hade/framework/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -13,11 +13,11 @@ import (
 )
 
 func main() {
-	core := framework.NewCore()
+	core := gin.New()
 
 	//注册中间件
 	core.Use(middleware.Cost())
-	core.Use(middleware.Recovery())
+	core.Use(gin.Recovery())
 
 	//注册路由
 	registerRouter(core)

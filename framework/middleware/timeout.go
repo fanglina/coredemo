@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"context"
-	"coredemo/framework"
 	"fmt"
+	"github.com/gohade/hade/framework/gin"
 	"time"
 )
 
-func Timeout(d time.Duration) framework.ControllerHandler {
-	return func(c *framework.Context) error {
+func Timeout(d time.Duration) gin.HandlerFunc {
+	return func(c *gin.Context)  {
 		finish := make(chan struct{}, 1)
 		panicChan := make(chan interface{}, 1)
 
@@ -34,12 +34,10 @@ func Timeout(d time.Duration) framework.ControllerHandler {
 		case <-finish:
 			fmt.Println("finish")
 		case p := <-panicChan:
-			c.SetStatus(500).Json( "time out")
+			c.ISetStatus(500).IJson( "time out")
 			fmt.Println(p)
 		case <-duration.Done():
-			c.SetHasTimeout()
-			c.SetStatus(500).Json( "time out")
+			c.ISetStatus(500).IJson( "time out")
 		}
-		return nil
 	}
 }
