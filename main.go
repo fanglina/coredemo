@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
+	"github.com/gohade/hade/app/provider/demo"
 	"github.com/gohade/hade/framework/gin"
 	"github.com/gohade/hade/framework/middleware"
-	"github.com/gohade/hade/provider/demo"
 	"log"
 	"net/http"
 	"os"
