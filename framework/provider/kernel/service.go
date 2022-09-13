@@ -5,15 +5,18 @@ import (
 	"net/http"
 )
 
+// 引擎服务
 type HadeKernelService struct {
 	engine *gin.Engine
 }
 
-func NewHadeKernelService(params ...interface{}) (interface{}, error)  {
+// 初始化web引擎服务实例
+func NewHadeKernelService(params ...interface{}) (interface{}, error) {
 	httpEngine := params[0].(*gin.Engine)
-	return &HadeKernelService{engine:httpEngine}, nil
+	return &HadeKernelService{engine: httpEngine}, nil
 }
 
-func (s *HadeKernelService) HttpEngine() http.Handler  {
+// 返回web引擎
+func (s *HadeKernelService) HttpEngine() http.Handler {
 	return s.engine
 }

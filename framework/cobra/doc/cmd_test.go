@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/spf13/cobra"
+	"github.com/gohade/hade/framework/cobra"
 )
 
 func emptyRun(*cobra.Command, []string) {}
