@@ -3,6 +3,8 @@ package contract
 const AppKey = "hade:app"
 
 type App interface {
+	// AppID 表示当前这个app的唯一id，可以用于分布式锁等
+	AppID() string
 	// Version 定义当前版本
 	Version() string
 	// BaseFold 定义项目基础地址
